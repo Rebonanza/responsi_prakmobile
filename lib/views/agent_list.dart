@@ -52,6 +52,9 @@ class _AgentListState extends State<AgentList> {
   }
 
   Widget _buildItemUsers(Data agent) {
+    if (agent == null) {
+      return Text('nilai null');
+    }
     return InkWell(
       onTap: () => {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -71,7 +74,10 @@ class _AgentListState extends State<AgentList> {
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [Text(agent.displayName!), Text(agent.characterTags!)],
+              children: [
+                Text(agent.displayName!),
+                Text(agent.role!.displayName!)
+              ],
             ),
           ],
         ),
