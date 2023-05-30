@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:responsi_prakmobile/views/agent_list.dart';
 import 'package:responsi_prakmobile/views/sign_up.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({
@@ -11,9 +13,28 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
-  String username = "";
-  String password = "";
-  bool isLoginSuccess = true;
+  final usernameController = TextEditingController();
+  final passwordController = TextEditingController();
+  bool isLogin = true;
+  late SharedPreferences logindata;
+  late bool newuser;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    check_if_already_login();
+  }
+
+  void check_if_already_login() async {
+    logindata = await SharedPreferences.getInstance();
+    newuser = (logindata.getBool('login') ?? true);
+    print(newuser);
+    if (newuser == false) {
+      Navigator.pushReplacement(
+          context, new MaterialPageRoute(builder: (context) => AgentList()));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -50,9 +71,7 @@ class _LoginFormState extends State<LoginForm> {
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: TextFormField(
         enabled: true,
-        onChanged: (value) {
-          username = value;
-        },
+        controller: usernameController,
         decoration: InputDecoration(
           hintText: 'Username',
           contentPadding: const EdgeInsets.all(8.0),
@@ -62,8 +81,7 @@ class _LoginFormState extends State<LoginForm> {
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(8.0)),
-            borderSide:
-                BorderSide(color: (isLoginSuccess) ? Colors.blue : Colors.red),
+            borderSide: BorderSide(color: (isLogin) ? Colors.blue : Colors.red),
           ),
         ),
       ),
@@ -76,9 +94,7 @@ class _LoginFormState extends State<LoginForm> {
       child: TextFormField(
         enabled: true,
         obscureText: true,
-        onChanged: (value) {
-          password = value;
-        },
+        controller: passwordController,
         decoration: InputDecoration(
           hintText: 'Password',
           contentPadding: const EdgeInsets.all(8.0),
@@ -88,8 +104,7 @@ class _LoginFormState extends State<LoginForm> {
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(8.0)),
-            borderSide:
-                BorderSide(color: (isLoginSuccess) ? Colors.blue : Colors.red),
+            borderSide: BorderSide(color: (isLogin) ? Colors.blue : Colors.red),
           ),
         ),
       ),
@@ -102,38 +117,19 @@ class _LoginFormState extends State<LoginForm> {
       width: MediaQuery.of(context).size.width,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          primary: (isLoginSuccess) ? Colors.blue : Colors.red,
+          primary: (isLogin) ? Colors.blue : Colors.red,
           onPrimary: Colors.white,
         ),
         onPressed: () {
-          String text = "";
-          if (username == "flutterMobile@gmail.com" &&
-              password == "flutter123") {
-            setState(() {
-              text = "Login Success";
-              isLoginSuccess = true;
-            });
-          } else if (!username.contains('@gmail.com') ||
-              !username.contains('@yahoo.com')) {
-            setState(() {
-              text = "Email Not Valid";
-              isLoginSuccess = false;
-            });
-          } else if (password.length <= 5) {
-            setState(() {
-              text = "Password must be less than 5 character";
-              isLoginSuccess = false;
-            });
-          } else {
-            setState(() {
-              text = "Login Failed";
-              isLoginSuccess = false;
-            });
+          String username = usernameController.text;
+          String password = passwordController.text;
+          if (username != '' && password != '') {
+            print('Successfull');
+            logindata.setBool('login', false);
+            logindata.setString('username', username);
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => AgentList()));
           }
-          SnackBar snackBar = SnackBar(
-            content: Text(text),
-          );
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
         },
         child: const Text('Login'),
       ),
@@ -146,7 +142,7 @@ class _LoginFormState extends State<LoginForm> {
       width: MediaQuery.of(context).size.width,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          primary: (isLoginSuccess) ? Colors.blue : Colors.red,
+          primary: Colors.blue,
           onPrimary: Colors.white,
         ),
         onPressed: () {
@@ -154,7 +150,7 @@ class _LoginFormState extends State<LoginForm> {
             return SignUp();
           }));
         },
-        child: const Text('Login'),
+        child: const Text('Sign Up'),
       ),
     );
   }

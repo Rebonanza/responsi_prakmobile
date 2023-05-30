@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:responsi_prakmobile/views/agent_list.dart';
 import 'package:responsi_prakmobile/views/login_page.dart';
 
 void main() {
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.grey,
       ),
-      home: LoginPage(),
+      home: AgentList(),
     );
   }
 }
